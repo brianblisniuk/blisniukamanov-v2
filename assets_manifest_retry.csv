@@ -1,0 +1,145 @@
+# Pipeline de imágenes para Blisniuk & Amanov
+
+Generador automático para los **131 archivos** de `assets/img/`.
+Usa fuentes con licencias compatibles con uso comercial:
+**Wikimedia Commons** (patrimonio), **Unsplash** y **Pexels**.
+
+---
+
+## ¿Por qué no te las entrego ya hechas desde el chat?
+
+El sandbox donde Claude corre tiene un allowlist de red estrictísimo.
+Confirmé esto durante la sesión:
+
+| Dominio                       | Estado |
+| ----------------------------- | ------ |
+| `images.unsplash.com` (CDN)   | ✅      |
+| `images.pexels.com` (CDN)     | ✅      |
+| `live.staticflickr.com` (CDN) | ✅      |
+| `upload.wikimedia.org`        | ❌      |
+| `commons.wikimedia.org`       | ❌      |
+| `www.pexels.com` (búsqueda)   | ❌      |
+| `cdn.pixabay.com`             | ❌      |
+| Páginas de búsqueda Unsplash  | ❌ (anti-bot Anubis) |
+
+**Conclusión**: descargar imágenes individuales sí, pero **buscarlas** programáticamente
+con cobertura para 131 slots no. Lo conseguí para 1 imagen (el hero del Registán)
+fetcheando manualmente la página de Unsplash. Para los 130 restantes te entrego
+este pipeline que **corrés vos en tu máquina**, donde no tenés esas restricciones.
+
+---
+
+## Cómo usar
+
+```bash
+# 1. Copiá los dos archivos al repo del sitio, en la carpeta:
+#       scripts/
+#         ├── fetch_images.py
+#         └── assets_manifest.csv
+
+# 2. Dependencias:
+pip install Pillow requests
+
+# 3. (Opcional pero MUY recomendado) API keys gratuitas:
+#    Unsplash: https://unsplash.com/developers  (5000 reqs/hora en demo)
+#    Pexels:   https://www.pexels.com/api/
+export UNSPLASH_ACCESS_KEY="..."
+export PEXELS_API_KEY="..."
+
+# 4. Probar primero con dry-run para revisar queries:
+python3 scripts/fetch_images.py --dry-run
+
+# 5. Hacer un viaje completo:
+python3 scripts/fetch_images.py --slug uzbekistan-ruta-seda
+
+# 6. O todo el calendario:
+python3 scripts/fetch_images.py
+
+# 7. Re-correrlo sin re-descargar las que ya bajaste:
+python3 scripts/fetch_images.py --only-missing
+```
+
+---
+
+## Qué hace el script
+
+Para cada uno de los **131 slots** del `assets_manifest.csv`:
+
+1. **Busca** en Wikimedia Commons + Unsplash + Pexels usando un query específico.
+2. **Filtra por licencia** (sólo CC-BY, CC-BY-SA, CC0, Public Domain, o las licencias
+   propias de Unsplash/Pexels que permiten uso comercial).
+3. **Descarga** el primer candidato válido en máxima resolución disponible.
+4. **Recorta al ratio del slot** (center-crop con `ImageOps.fit`):
+
+   | Tipo slot              | Ratio | Dimensiones |
+   |------------------------|-------|-------------|
+   | `hero-*`               | 16:9  | 1920×1040   |
+   | `wildlife-*`           | 3:4   | 900×1200    |
+   | `day-*`                | 4:3   | 1000×750    |
+   | `lodge-*`, `dest-*`, `way-*` | 4:5 | 1200×1500 |
+   | `brochure-*`, `stay-*` | 4:3   | 1200×900    |
+
+   *Nota: para el hero bajé de 2400×1300 (lo del inventario) a 1920×1040 — la calidad
+   visual es indistinguible en pantalla y entra holgado en los 400 KB.*
+
+5. **Optimiza** a JPEG progresivo, iterando quality de 88 hasta 68 buscando ≤400 KB.
+6. **Guarda** en `assets/img/<archivo>.jpg` con el nombre exacto del inventario.
+7. **Registra la atribución** en `scripts/attributions.txt` (autor, fuente, licencia).
+   Necesitás esto para los créditos del sitio si usás imágenes CC-BY.
+
+---
+
+## Editar queries
+
+El `assets_manifest.csv` tiene una columna `query` con búsquedas pensadas slot por slot.
+Si alguna no devuelve resultados buenos:
+
+1. Editá la fila correspondiente con un query más específico.
+2. Borrá el archivo que quedó mal en `assets/img/`.
+3. Re-corré con `--only-missing`.
+
+**Tips para queries que funcionan bien:**
+- Patrimonio histórico: usá nombre propio del lugar (ej. "Registan Samarkand", no "Uzbekistan plaza")
+- Lodges puntuales: si la marca no está en CC, usá un equivalente genérico
+  (ej. "Khiva traditional hotel courtyard" en vez de "Orient Star Khiva")
+- Wildlife/detalles: incluí términos visuales ("close-up", "detail", "macro", "backlight")
+- Hora del día: agregá "sunrise"/"sunset"/"golden hour" para luz dorada baja
+
+---
+
+## Atribución (importante)
+
+Las licencias **CC-BY** y **CC-BY-SA** **requieren crédito visible**. El script
+genera `scripts/attributions.txt` con todas las atribuciones. Pegalas en:
+
+- Footer del sitio, o
+- Página dedicada `/creditos`, o
+- En el alt text + en una sección Photos by
+
+Las imágenes de **Wikimedia con licencia CC0** o **Public Domain** no requieren
+atribución, pero igualmente queda bien acreditar.
+
+Las de **Unsplash** y **Pexels** no requieren atribución por su licencia, pero
+ambas plataformas lo agradecen.
+
+---
+
+## Sample listo: hero-uzbekistan-ruta-seda.jpg
+
+Este ya viene incluido. Es la Plaza Registán de Samarcanda al ocaso, fotografía
+de **Ozodbek Erkinov** vía Unsplash (licencia Unsplash — free for commercial use).
+Procesada a 1920×1040, 395 KB, q=76.
+
+Si te gusta cómo quedó, el script va a producir los otros 130 con la misma calidad.
+
+---
+
+## Si algo falla
+
+- **Sin candidatos para X slot**: el query está muy específico. Probá uno más
+  amplio o cambiá la fuente esperada en el CSV.
+- **Imágenes "ok" pero feas**: refinaste el query, pero el primer candidato no era
+  el mejor. Podés modificar el script para pedirte confirmación interactiva
+  (línea ~165, agregá `input("¿OK? [s/n]: ")` antes del `return "ok"`).
+- **APIs rate-limit**: el script ya hace `sleep(0.5)` entre slots. Si te bloquean,
+  subilo a `sleep(2)`.

@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""Pipeline completo: Openverse API → descarga → procesamiento → guardado."""
+import csv, io, json, os, subprocess, sys, time, urllib.parse
+from pathlib import Path
+from PIL import Image, ImageOps
+
+ROOT = Path("/home/claude/imgs")
+MANIFEST = ROOT / "output" / "scripts" / "assets_manifest.csv"
+OUT_DIR = ROOT / "output" / "assets" / "img"
+RAW_DIR = ROOT / "raw"
+LOG_FILE = ROOT / "pipeline.log"
+ATTRIB_FILE = ROOT / "output" / "scripts" / "attributions.txt"
+
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+RAW_DIR.mkdir(parents=True, exist_ok=True)
+
+# Ratios por tipo de slot
+RATIOS = {
+    "hero":     (1920, 1040),
+    "wildlife": (900, 1200),
+    "day":      (1000, 750),
+    "lodge":    (1200, 1500),
+    "dest":     (1200, 1500),
+    "way":      (1200, 1500),
+    "brochure": (1200, 900),
+    "stay":     (1200, 900),
+    "intro":    (1600, 900),
+    "why":      (1600, 900),
+    "award":    (1200, 900),
+    "next":     (1600, 900),
+    "fund":     (1200, 900),
+    "route":    (1600, 900),
+}
+
+# Orientación esperada por tipo
+ORIENT = {
+    "hero": "landscape", "day": "landscape", "brochure": "landscape",
+    "stay": "landscape", "intro": "landscape", "why": "landscape",
+    "next": "landscape", "fund": "landscape", "route": "landscape", "award": "landscape",
+    "wildlife": "tall", "lodge": "tall", "dest": "tall", "way": "tall",
+}
+
+MAX_KB = 400
+
+def log(msg):
+    print(msg, flush=True)
+    with open(LOG_FILE, "a") as f:
+        f.write(msg + "\n")
+
+def detect_type(filename):
+    base = filename.split("-", 1)[0]
+    return base if base in RATIOS else "stay"
+
+def openverse_search(query, page_size=20, orient=None):
+    """Buscar en Openverse con filtros comerciales — sólo Flickr (única source descargable)."""
+    q_enc = urllib.parse.quote(query)
+    params = [
+        f"q={q_enc}",
+        f"page_size={page_size}",
+        "license=cc0,pdm,by,by-sa",
+        "source=flickr",
+    ]
+    if orient == "landscape": params.append("aspect_ratio=wide")
+    elif orient == "tall": params.append("aspect_ratio=tall")
+    url = "https://api.openverse.org/v1/images/?" + "&".join(params)
+    r = subprocess.run(["curl", "-sL", "--max-time", "25", url],
+                       capture_output=True, timeout=30)
+    try:
+        return json.loads(r.stdout).get("results", [])
+    except: return []
+
+def try_flickr_sizes(url, dest):
+    """La URL viene como ..._b.jpg (1024). Probar _h (1600) y _k (2048) si los hay,
+    y caer al _b si fallan."""
+    base = url.rsplit("_", 1)[0] if "_b.jpg" in url or "_h.jpg" in url or "_k.jpg" in url else None
+    candidates = [url]
+    if base:
+        candidates = [f"{base}_k.jpg", f"{base}_h.jpg", url]  # de mayor a menor
+    for u in candidates:
+        r = subprocess.run(["curl", "-sL", "--max-time", "30", "-o", str(dest),
+                            "-w", "%{http_code}", u], capture_output=True, timeout=35)
+        code = r.stdout.decode().strip()[-3:]
+        if code == "200" and dest.exists() and dest.stat().st_size > 30000:
+            return True, u
+    return False, None
+
+def download(url, dest):
+    r = subprocess.run(["curl", "-sL", "--max-time", "30", "-o", str(dest), url],
+                       capture_output=True, timeout=35)
+    return dest.exists() and dest.stat().st_size > 30000
+
+def process(src_bytes_or_path, dest, slot_type):
+    target_w, target_h = RATIOS[slot_type]
+    if isinstance(src_bytes_or_path, (str, Path)):
+        im = Image.open(src_bytes_or_path)
+    else:
+        im = Image.open(io.BytesIO(src_bytes_or_path))
+    im = ImageOps.exif_transpose(im).convert("RGB")
+    # Si la imagen original es más chica que el target, igual la usamos pero advertimos
+    out = ImageOps.fit(im, (target_w, target_h), Image.LANCZOS, centering=(0.5, 0.5))
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    for q in (88, 85, 82, 80, 78, 76, 74, 72, 70, 68):
+        out.save(dest, "JPEG", quality=q, optimize=True, progressive=True)
+        if dest.stat().st_size / 1024 <= MAX_KB:
+            return q, dest.stat().st_size / 1024, im.size
+    return q, dest.stat().st_size / 1024, im.size
+
+def process_slot(row):
+    fname = row["filename"]
+    query = row["query"]
+    dest = OUT_DIR / fname
+    slot_type = detect_type(fname)
+    target_w, target_h = RATIOS[slot_type]
+    orient = ORIENT.get(slot_type)
+    min_w = min(target_w, 800)  # mínimo aceptable
+
+    log(f"\n→ {fname}  [{slot_type} {target_w}x{target_h}]")
+    log(f"   q: {query}")
+
+    # Buscar
+    results = openverse_search(query, page_size=12, orient=orient)
+    if not results:
+        # Reintento sin orientación
+        results = openverse_search(query, page_size=12)
+    if not results:
+        log(f"   ✗ sin resultados")
+        return False, None
+
+    # Filtrar por dimensiones mínimas
+    valid = [r for r in results if (r.get("width") or 0) >= min_w]
+    if not valid:
+        valid = results  # caer al primero que haya
+
+    for i, r in enumerate(valid[:8]):
+        url = r["url"]
+        w = r.get("width", "?"); h = r.get("height", "?")
+        lic = r.get("license", "?")
+        creator = (r.get("creator") or "?")[:30]
+        log(f"   [{i+1}] {w}x{h} {lic:6} by {creator} | {r.get('source','?')}")
+        raw_path = RAW_DIR / fname
+        ok, actual_url = try_flickr_sizes(url, raw_path)
+        if ok:
+            try:
+                q, sz_kb, orig = process(raw_path, dest, slot_type)
+                log(f"   ✓ {sz_kb:.0f}KB q={q} (orig {orig[0]}x{orig[1]})")
+                with open(ATTRIB_FILE, "a") as f:
+                    f.write(f"{fname}\t{r.get('source','?')}\t{creator}\t{lic}\t{r.get('foreign_landing_url',url)}\n")
+                return True, r
+            except Exception as e:
+                log(f"     ⚠ procesamiento falló: {e}")
+        else:
+            log(f"     ⚠ descarga falló")
+    log(f"   ✗ todos los candidatos fallaron")
+    return False, None
+
+# Read manifest
+with open(MANIFEST) as f:
+    rows = list(csv.DictReader(f))
+log(f"Total slots: {len(rows)}")
+
+# Process command line: filtro opcional
+if len(sys.argv) > 1:
+    filter_str = sys.argv[1]
+    rows = [r for r in rows if filter_str in r["filename"] or filter_str in r.get("slug","")]
+    log(f"Filtrado a {len(rows)} slots con '{filter_str}'")
+
+stats = {"ok": 0, "fail": 0}
+failures = []
+for i, row in enumerate(rows, 1):
+    log(f"\n=== [{i}/{len(rows)}] ===")
+    ok, info = process_slot(row)
+    stats["ok" if ok else "fail"] += 1
+    if not ok:
+        failures.append(row["filename"])
+    time.sleep(0.3)
+
+log(f"\n{'='*50}\nDONE. OK={stats['ok']}  FAIL={stats['fail']}")
+if failures:
+    log(f"Failed: {', '.join(failures[:20])}{'...' if len(failures)>20 else ''}")

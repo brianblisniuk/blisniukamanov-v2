@@ -1,0 +1,115 @@
+# Decap CMS configuration for Blisniuk & Amanov
+# Docs: https://decapcms.org/docs/
+
+backend:
+  name: git-gateway
+  branch: main
+  commit_messages:
+    create: 'CMS: agregar {{collection}} "{{slug}}"'
+    update: 'CMS: actualizar {{collection}} "{{slug}}"'
+    delete: 'CMS: borrar {{collection}} "{{slug}}"'
+
+# Where images uploaded from the CMS are saved
+media_folder: "assets/img"
+public_folder: "/assets/img"
+
+locale: "es"
+
+site_url: https://blisniukamanov.com
+display_url: https://blisniukamanov.com
+logo_url: https://blisniukamanov.com/assets/favicon.svg
+
+collections:
+  # ---------- Configuración global ----------
+  - name: "site"
+    label: "⚙️ Configuración del sitio"
+    files:
+      - name: "settings"
+        label: "Datos generales"
+        file: "content/site-settings.json"
+        format: "json"
+        fields:
+          - { label: "Teléfono visible", name: "phone_display", widget: "string", default: "+54 11 6139 5550" }
+          - { label: "Teléfono link (tel:)", name: "phone_link", widget: "string", default: "+541161395550" }
+          - { label: "WhatsApp (número internacional sin +)", name: "whatsapp", widget: "string", default: "5491161395550" }
+          - { label: "Email principal", name: "email", widget: "string", default: "info@blisniukamanov.com" }
+          - { label: "Dirección", name: "address", widget: "string", default: "Manuel Ugarte 2035, Buenos Aires" }
+          - { label: "Horarios texto", name: "hours", widget: "text", default: "Lunes a viernes · 9:00 a 20:00 ART\nSábados · 9:00 a 14:00 ART" }
+          - { label: "Matrícula RNAV", name: "rnav", widget: "string", default: "RNAV Legajo 20943" }
+          - { label: "Instagram", name: "instagram", widget: "string", required: false }
+          - { label: "Facebook",  name: "facebook",  widget: "string", required: false }
+          - { label: "YouTube",   name: "youtube",   widget: "string", required: false }
+          - { label: "LinkedIn",  name: "linkedin",  widget: "string", required: false }
+
+  # ---------- Viajes ----------
+  - name: "viajes"
+    label: "🌍 Viajes"
+    label_singular: "Viaje"
+    folder: "content/journeys"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} · {{days}} días · desde {{price_from}} USD"
+    fields:
+      - { label: "Título del viaje", name: "title", widget: "string" }
+      - { label: "Eyebrow / categoría", name: "eyebrow", widget: "string", default: "Pequeña expedición" }
+      - { label: "Slug (URL)", name: "slug", widget: "string", hint: "ej: piamonte-tartufo" }
+      - { label: "Hero (imagen)", name: "hero", widget: "image", required: false }
+      - { label: "Región", name: "region", widget: "select", options: ["África","Asia","Europa","Sudamérica","Norteamérica","Centroamérica","Oceanía","Antártida","Caribe","Oriente Próximo"] }
+      - { label: "Países", name: "countries", widget: "list", default: [] }
+      - { label: "Días", name: "days", widget: "number", value_type: "int", min: 1 }
+      - { label: "Máximo de viajeros", name: "max_guests", widget: "number", value_type: "int", min: 1, max: 30 }
+      - { label: "Precio desde (USD)", name: "price_from", widget: "number", value_type: "int" }
+      - { label: "Ventana de salidas", name: "departures_window", widget: "string", default: "Marzo–Octubre" }
+      - { label: "Resumen corto", name: "summary", widget: "text" }
+      - { label: "Itinerario (descripción)", name: "intro", widget: "markdown" }
+      - label: "Aspectos destacados (3)"
+        name: "highlights"
+        widget: "list"
+        max: 3
+        min: 3
+        fields:
+          - { label: "Título", name: "title", widget: "string" }
+          - { label: "Descripción", name: "body", widget: "text" }
+      - label: "Itinerario día a día"
+        name: "days_list"
+        widget: "list"
+        fields:
+          - { label: "Días (ej. \"1\", \"2 · 3\")", name: "label", widget: "string" }
+          - { label: "Título del tramo", name: "title", widget: "string" }
+          - { label: "Descripción", name: "body", widget: "markdown" }
+          - { label: "Comidas incluidas", name: "meals", widget: "string", required: false }
+          - { label: "Alojamiento", name: "accommodation", widget: "string", required: false }
+          - { label: "Imagen del día", name: "image", widget: "image", required: false }
+      - label: "Alojamientos seleccionados"
+        name: "lodges"
+        widget: "list"
+        fields:
+          - { label: "Nombre", name: "name", widget: "string" }
+          - { label: "Ubicación", name: "location", widget: "string" }
+          - { label: "Imagen", name: "image", widget: "image", required: false }
+      - label: "Salidas y precios"
+        name: "dates"
+        widget: "list"
+        fields:
+          - { label: "Fecha", name: "date", widget: "string" }
+          - { label: "Estado", name: "status", widget: "select", options: ["Abierta","Pocas plazas","Lista de espera"] }
+          - { label: "Precio (USD)", name: "price", widget: "number", value_type: "int" }
+
+  # ---------- Destinos (regiones) ----------
+  - name: "destinos"
+    label: "📍 Destinos / regiones"
+    label_singular: "Destino"
+    folder: "content/destinations"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Región / país", name: "title", widget: "string" }
+      - { label: "Slug", name: "slug", widget: "string" }
+      - { label: "Continente", name: "continent", widget: "select", options: ["África","Asia","Europa","Américas","Oceanía","Polos","Oriente Próximo"] }
+      - { label: "Imagen principal", name: "image", widget: "image", required: false }
+      - { label: "Lede", name: "lede", widget: "text" }
+      - { label: "Descripción", name: "body", widget: "markdown" }

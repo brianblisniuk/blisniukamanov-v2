@@ -1,0 +1,263 @@
+#!/usr/bin/env python3
+"""
+fetch_images.py — Pipeline automático de imágenes para Blisniuk & Amanov.
+
+Para cada slot definido en assets_manifest.csv:
+  1) Busca en Wikimedia Commons (patrimonio, cc-by-sa) y/o Unsplash (free for commercial)
+  2) Descarga el mejor candidato
+  3) Recorta al ratio correcto (center-crop con `ImageOps.fit`)
+  4) Optimiza JPG progresivo a <=400 KB
+  5) Guarda en assets/img/<archivo>.jpg
+
+Uso:
+    pip install Pillow requests
+    # Para usar Unsplash necesitás API key (gratuita en unsplash.com/developers)
+    export UNSPLASH_ACCESS_KEY="tu-key-aca"
+    python3 fetch_images.py                       # corre todo
+    python3 fetch_images.py --slug uzbekistan-ruta-seda   # un viaje
+    python3 fetch_images.py --only-missing        # sólo los que faltan
+    python3 fetch_images.py --dry-run             # ver queries sin descargar
+"""
+
+import argparse, csv, io, json, os, re, sys, time
+from pathlib import Path
+
+try:
+    import requests
+    from PIL import Image, ImageOps
+except ImportError:
+    sys.exit("Falta dependencia. Corré: pip install Pillow requests")
+
+# ────────────────────────── Config ──────────────────────────
+
+ROOT          = Path(__file__).resolve().parent.parent
+ASSETS_DIR    = ROOT / "assets" / "img"
+MANIFEST_CSV  = Path(__file__).resolve().parent / "assets_manifest.csv"
+CACHE_DIR     = Path(__file__).resolve().parent / ".cache"
+LOG_PATH      = Path(__file__).resolve().parent / "fetch.log"
+
+# Mapa de tipo de slot → (ancho, alto)
+RATIOS = {
+    "hero":     (1920, 1040),   # 16:9 — bajado de 2400x1300 para que entre en 400KB
+    "wildlife": (900, 1200),    # 3:4
+    "day":      (1000, 750),    # 4:3
+    "lodge":    (1200, 1500),   # 4:5
+    "dest":     (1200, 1500),   # 4:5
+    "way":      (1200, 1500),   # 4:5
+    "brochure": (1200, 900),    # 4:3
+    "stay":     (1200, 900),    # 4:3
+    "misc":     (1600, 900),    # 16:9 genérico para hero-savannah, etc.
+}
+
+MAX_KB = 400   # cap por imagen
+UA     = "BlisniukAmanovImageFetch/1.0 (web; sitio comercial; contacto: tu@email.com)"
+
+WIKIMEDIA_API = "https://commons.wikimedia.org/w/api.php"
+UNSPLASH_API  = "https://api.unsplash.com"
+PEXELS_API    = "https://api.pexels.com/v1"
+
+# Licencias CC compatibles con uso comercial
+WIKIMEDIA_OK_LICENSE_RE = re.compile(
+    r"\b(CC0|CC[ -]?BY(?:[ -]?SA)?(?:[ -]?\d(?:\.\d)?)?|Public domain|PD)\b",
+    re.IGNORECASE,
+)
+
+# ────────────────────────── Helpers ──────────────────────────
+
+def log(msg):
+    print(msg)
+    with open(LOG_PATH, "a", encoding="utf-8") as f:
+        f.write(msg + "\n")
+
+def http_get_json(url, params=None, headers=None, timeout=20):
+    headers = {"User-Agent": UA, **(headers or {})}
+    r = requests.get(url, params=params, headers=headers, timeout=timeout)
+    r.raise_for_status()
+    return r.json()
+
+def http_get_bytes(url, timeout=30):
+    r = requests.get(url, headers={"User-Agent": UA}, timeout=timeout, stream=True)
+    r.raise_for_status()
+    return r.content
+
+# ────────────────────────── Búsqueda ──────────────────────────
+
+def search_wikimedia(query, limit=6):
+    """Devuelve [{title, url, width, height, license, artist}, ...] - licencia ya filtrada."""
+    # 1) Buscar archivos
+    data = http_get_json(WIKIMEDIA_API, params={
+        "action": "query", "format": "json",
+        "list": "search", "srsearch": query,
+        "srnamespace": "6", "srlimit": str(limit * 3),  # over-fetch, filtramos por licencia
+    })
+    titles = [hit["title"] for hit in data.get("query", {}).get("search", [])]
+    if not titles:
+        return []
+
+    # 2) Metadatos en lote
+    data = http_get_json(WIKIMEDIA_API, params={
+        "action": "query", "format": "json",
+        "prop": "imageinfo",
+        "titles": "|".join(titles),
+        "iiprop": "url|size|extmetadata|mime",
+        "iiurlwidth": "2400",
+    })
+
+    results = []
+    for page in data.get("query", {}).get("pages", {}).values():
+        ii = (page.get("imageinfo") or [{}])[0]
+        if not ii: continue
+        meta = ii.get("extmetadata", {})
+        license_str = meta.get("LicenseShortName", {}).get("value", "")
+        if not WIKIMEDIA_OK_LICENSE_RE.search(license_str):
+            continue
+        if ii.get("mime", "") not in ("image/jpeg", "image/png", "image/webp"):
+            continue
+        results.append({
+            "title": page.get("title"),
+            "url": ii.get("thumburl") or ii.get("url"),  # thumburl = la 2400px
+            "width": ii.get("width"), "height": ii.get("height"),
+            "license": license_str,
+            "artist": re.sub(r"<[^>]+>", "", meta.get("Artist", {}).get("value", ""))[:80],
+            "source": "Wikimedia Commons",
+        })
+        if len(results) >= limit: break
+    return results
+
+def search_unsplash(query, limit=6):
+    """Requiere UNSPLASH_ACCESS_KEY env. Free for commercial use."""
+    key = os.environ.get("UNSPLASH_ACCESS_KEY")
+    if not key: return []
+    data = http_get_json(f"{UNSPLASH_API}/search/photos", params={
+        "query": query, "per_page": limit, "orientation": "landscape",
+    }, headers={"Authorization": f"Client-ID {key}"})
+    return [{
+        "title": p.get("description") or p.get("alt_description") or query,
+        "url": p["urls"]["raw"] + "&w=2400&q=85&fm=jpg",
+        "width": p.get("width"), "height": p.get("height"),
+        "license": "Unsplash License (commercial OK)",
+        "artist": p["user"]["name"],
+        "source": "Unsplash",
+    } for p in data.get("results", [])]
+
+def search_pexels(query, limit=6):
+    """Requiere PEXELS_API_KEY env."""
+    key = os.environ.get("PEXELS_API_KEY")
+    if not key: return []
+    data = http_get_json(f"{PEXELS_API}/search", params={
+        "query": query, "per_page": limit,
+    }, headers={"Authorization": key})
+    return [{
+        "title": p.get("alt", query),
+        "url": p["src"]["large2x"],
+        "width": p.get("width"), "height": p.get("height"),
+        "license": "Pexels License (commercial OK)",
+        "artist": p["photographer"],
+        "source": "Pexels",
+    } for p in data.get("photos", [])]
+
+def search_all(query):
+    """Combina las tres fuentes priorizando Wikimedia (patrimonio) > Unsplash > Pexels."""
+    out = []
+    for fn in (search_wikimedia, search_unsplash, search_pexels):
+        try:
+            out.extend(fn(query, limit=4))
+        except Exception as e:
+            log(f"    ⚠ {fn.__name__} fallo: {e}")
+    return out
+
+# ────────────────────────── Procesamiento ──────────────────────────
+
+def detect_type(filename):
+    """De 'hero-uzbekistan-ruta-seda.jpg' → 'hero'."""
+    base = filename.split("-", 1)[0]
+    return base if base in RATIOS else "misc"
+
+def process_and_save(img_bytes, dest_path, slot_type):
+    target_w, target_h = RATIOS[slot_type]
+    im = Image.open(io.BytesIO(img_bytes))
+    im = ImageOps.exif_transpose(im).convert("RGB")
+    out = ImageOps.fit(im, (target_w, target_h), Image.LANCZOS, centering=(0.5, 0.5))
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    for q in (88, 85, 82, 80, 78, 76, 74, 72, 70, 68):
+        out.save(dest_path, "JPEG", quality=q, optimize=True, progressive=True)
+        if dest_path.stat().st_size / 1024 <= MAX_KB:
+            return q, dest_path.stat().st_size / 1024
+    return q, dest_path.stat().st_size / 1024  # devolver lo último aunque pase
+
+# ────────────────────────── Main ──────────────────────────
+
+def process_slot(row, dry_run=False, only_missing=False):
+    fname = row["filename"]
+    query = row["query"]
+    dest = ASSETS_DIR / fname
+    slot_type = detect_type(fname)
+
+    if only_missing and dest.exists():
+        return "skip"
+
+    log(f"\n→ {fname}  [{slot_type}, {RATIOS[slot_type][0]}x{RATIOS[slot_type][1]}]")
+    log(f"   query: {query}")
+    if dry_run:
+        return "dry"
+
+    candidates = search_all(query)
+    if not candidates:
+        log(f"   ✗ Sin candidatos. Probá refinar el query.")
+        return "fail"
+
+    for i, c in enumerate(candidates, 1):
+        try:
+            log(f"   [{i}/{len(candidates)}] {c['source']} — {c['license']} — {c['artist']}")
+            img_bytes = http_get_bytes(c["url"])
+            q, sz_kb = process_and_save(img_bytes, dest, slot_type)
+            log(f"   ✓ {fname}  ({sz_kb:.0f} KB @ q={q})  ← {c['source']} / {c['artist']}")
+            # Guardar atribución
+            with open(Path(__file__).resolve().parent / "attributions.txt", "a") as f:
+                f.write(f"{fname}\t{c['source']}\t{c['artist']}\t{c['license']}\t{c['url']}\n")
+            return "ok"
+        except Exception as e:
+            log(f"     ⚠ falló: {e}")
+            continue
+    log(f"   ✗ Todos los candidatos fallaron.")
+    return "fail"
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--slug", help="Procesar sólo un viaje (ej: uzbekistan-ruta-seda)")
+    ap.add_argument("--only-missing", action="store_true", help="Saltar los que ya existen")
+    ap.add_argument("--dry-run", action="store_true", help="Mostrar queries sin descargar")
+    ap.add_argument("--manifest", default=str(MANIFEST_CSV))
+    args = ap.parse_args()
+
+    if not Path(args.manifest).exists():
+        sys.exit(f"No encuentro {args.manifest}")
+
+    with open(args.manifest, encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+
+    if args.slug:
+        rows = [r for r in rows if r.get("slug") == args.slug or args.slug in r["filename"]]
+
+    log(f"\n{'='*60}\nfetch_images.py — {len(rows)} slots a procesar")
+    log(f"{'='*60}")
+
+    stats = {"ok": 0, "fail": 0, "skip": 0, "dry": 0}
+    for row in rows:
+        try:
+            r = process_slot(row, dry_run=args.dry_run, only_missing=args.only_missing)
+            stats[r] += 1
+            time.sleep(0.5)  # no martillar las APIs
+        except KeyboardInterrupt:
+            log("\nInterrumpido por usuario.")
+            break
+        except Exception as e:
+            log(f"   ✗ ERROR inesperado: {e}")
+            stats["fail"] += 1
+
+    log(f"\n{'='*60}")
+    log(f"Listo. OK={stats['ok']} | Falla={stats['fail']} | Skip={stats['skip']} | Dry={stats['dry']}")
+    log(f"Atribuciones guardadas en: {Path(__file__).resolve().parent / 'attributions.txt'}")
+
+if __name__ == "__main__":
+    main()
