@@ -2051,7 +2051,7 @@ p  { margin: 0 0 1em; }
 .explorer-head h2 { margin: 0; }
 .explorer-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 260px 1fr;
   gap: 36px;
   align-items: flex-start;
 }
@@ -2088,6 +2088,19 @@ p  { margin: 0 0 1em; }
   color: var(--ink-mute);
 }
 .filters .filter-list a:hover { color: var(--copper); }
+.j-search {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--white);
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+}
+.j-search::placeholder { color: var(--ink-mute); }
+.j-search:focus { outline: none; border-color: var(--laurel); }
 
 .journey-grid {
   display: grid;

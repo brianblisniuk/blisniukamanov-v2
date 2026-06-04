@@ -413,6 +413,8 @@
 
   function applyFilters() {
     const filters = {}; // {kind: Set of values}
+    const _se = document.getElementById("jSearch");
+    const _term = _se ? _se.value.trim().toLowerCase() : "";
     document.querySelectorAll(".filters .filter-list a.active").forEach((a) => {
       const det = a.closest("details");
       const summary = det && det.querySelector("summary");
@@ -452,6 +454,11 @@
           if (!match) show = false;
         }
       });
+      if (show && _term) {
+        const _t = (card.querySelector("h3")?.textContent || "").toLowerCase();
+        const _i = (card.querySelector(".j-itin")?.textContent || "").toLowerCase();
+        if (!(_t.includes(_term) || _i.includes(_term))) show = false;
+      }
       card.style.display = show ? "" : "none";
       if (show) visible++;
     });
@@ -506,43 +513,19 @@
     });
   });
 
-  // Read query string ?q=... and pre-filter cards by title text
+  // Buscador en vivo (compone con los filtros)
+  const _jSearch = document.getElementById("jSearch");
+  if (_jSearch) _jSearch.addEventListener("input", applyFilters);
+
+  // ?q=... pre-carga el buscador y aplica
   const params = new URLSearchParams(window.location.search);
-  const q = (params.get("q") || "").trim().toLowerCase();
+  const q = (params.get("q") || "").trim();
   if (q) {
-    document.querySelectorAll(".j-card").forEach((card) => {
-      const title = card.querySelector("h3")?.textContent.toLowerCase() || "";
-      const itin = card.querySelector(".j-itin")?.textContent.toLowerCase() || "";
-      const match = title.includes(q) || itin.includes(q);
-      card.style.display = match ? "" : "none";
-    });
-    const cards = document.querySelectorAll(".j-card");
-    const visible = document.querySelectorAll('.j-card:not([style*="display: none"])').length;
-    const head = document.querySelector(".explorer-head p");
-    if (head) head.textContent = `Mostrando ${visible} resultados para "${q}"`;
+    if (_jSearch) _jSearch.value = q;
+    applyFilters();
   }
 
-  /* ==========================================================
-     Forms — newsletter: validate email client-side, then let Netlify
-     Forms handle the actual submission (action="/gracias.html").
-     If the form has no action/data-netlify, fall back to fake-submit.
-     ========================================================== */
-  document.querySelectorAll("form.newsletter, form.newsletter-form").forEach((form) => {
-    form.addEventListener("submit", (e) => {
-      const email = form.querySelector('input[type="email"]');
-      if (!email || !email.value || !/.+@.+\..+/.test(email.value)) {
-        e.preventDefault();
-        showToast("Por favor ingresá un correo válido.", "error");
-        return;
-      }
-      // If the form is wired to Netlify Forms, let it submit normally
-      // (it will POST and redirect to action). Otherwise fake-submit.
-      if (form.hasAttribute("data-netlify") && form.getAttribute("action")) return;
-      e.preventDefault();
-      form.querySelectorAll("input").forEach((i) => { if (i.type !== "hidden") i.value = ""; });
-      showToast("¡Suscripción confirmada! Revisá tu correo.", "ok");
-    });
-  });
+  /* Newsletter: lo maneja el handler único de public-subscribe (más abajo). */
 
   /* ==========================================================
      Toast (small floating message)
