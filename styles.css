@@ -19,15 +19,6 @@
   font-style: italic;
   font-display: swap;
 }
-@font-face {
-  font-family: "Sohne";
-  src: url("assets/fonts/Sohne-BoldItalic.woff2") format("woff2"),
-       url("assets/fonts/Sohne-BoldItalic.woff") format("woff"),
-       url("assets/fonts/Sohne-BoldItalic.ttf") format("truetype");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
 
 /* =========================
    Tokens
@@ -42,7 +33,7 @@
   --ink: #1A1A1A;             /* text */
   --ink-2: #2B2B2B;
   --stone: #8B8478;           /* secondary text — Stone */
-  --brass: #B8945A;           /* accent — Aged Brass (use sparingly) */
+  --brass: #3D5A3E;           /* accent — Aged Brass (use sparingly) */
   --line: #E5DED0;
   --line-soft: #EFE9DA;
   --white: #FFFFFF;
@@ -61,7 +52,7 @@
 
   /* Typography */
   --serif: "GT Sectra Display", "Cormorant Garamond", "Times New Roman", serif;
-  --sans: "Inter", "Sohne", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --sans: "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
 
   --maxw: 1380px;
