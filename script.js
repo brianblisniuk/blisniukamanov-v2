@@ -31,7 +31,7 @@
     const wa = document.getElementById("waButton");
     if (wa && s.whatsapp) {
       const greeting = s.whatsapp_greeting || "Hola.";
-      wa.href = "https://wa.me/" + s.whatsapp + "?text=" + encodeURIComponent(greeting);
+      wa.href = "https://onnqcdjkvpvpvtsorpup.supabase.co/functions/v1/go?to=wa&c=sitio&src=fab";
     }
   }
   fetch("content/site-settings.json", { cache: "no-store" })
@@ -60,7 +60,7 @@
     const wa = document.createElement("a");
     wa.id = "waButton";
     wa.className = "whatsapp-fab";
-    wa.href = "https://wa.me/5491161395550?text=" + encodeURIComponent("Hola, me gustaría hablar con un asesor de Blisniuk & Amanov.");
+    wa.href = "https://onnqcdjkvpvpvtsorpup.supabase.co/functions/v1/go?to=wa&c=sitio&src=fab";
     wa.target = "_blank";
     wa.rel = "noopener";
     wa.setAttribute("aria-label", "Chatear por WhatsApp");
@@ -107,10 +107,25 @@
         <button class="modal-close" data-close aria-label="Cerrar">×</button>
         <h2 id="expertModalTitle" class="modal-title">${ctxLabel}</h2>
 
-        <form name="consulta-experto" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/gracias.html" class="modal-form">
-          <input type="hidden" name="form-name" value="consulta-experto" />
+        <form name="consulta-experto" method="POST" action="/gracias.html" class="modal-form">
           <p class="hidden-field"><label>No completar: <input name="bot-field" /></label></p>
           <input type="hidden" name="contexto" value="${location.pathname}" />
+          <input type="hidden" name="intent" value="consulta" />
+          <input type="hidden" name="salida" value="" />
+          <input type="hidden" name="viaje" value="${ctx.country}" />
+
+          <label class="field">
+            <span>Tu nombre</span>
+            <input type="text" name="nombre" required placeholder="Nombre y apellido" />
+          </label>
+          <label class="field">
+            <span>Tu email</span>
+            <input type="email" name="email" required placeholder="vos@email.com" />
+          </label>
+          <label class="field">
+            <span>Teléfono (opcional)</span>
+            <input type="tel" name="telefono" placeholder="+54 9 11 …" />
+          </label>
 
           <fieldset class="radios m-radios">
             <legend>¿Sos asesor de viajes?</legend>
@@ -156,11 +171,27 @@
     `;
     document.body.appendChild(wrap);
 
-    const open = () => {
+    const fSalida = wrap.querySelector('[name="salida"]');
+    const fIntent = wrap.querySelector('[name="intent"]');
+    const fMensaje = wrap.querySelector('[name="mensaje"]');
+    const fTitle = wrap.querySelector('#expertModalTitle');
+    const open = (opts) => {
+      opts = opts || {};
+      if (opts.salida) {
+        if (fSalida) fSalida.value = opts.salida;
+        if (fIntent) fIntent.value = "reserva";
+        if (fTitle) fTitle.textContent = "Reservar salida · " + opts.salida;
+        if (fMensaje && !fMensaje.value) fMensaje.value = "Quiero reservar la salida del " + opts.salida + ".";
+      } else {
+        if (fSalida) fSalida.value = "";
+        if (fIntent) fIntent.value = "consulta";
+        if (fTitle) fTitle.textContent = ctxLabel;
+      }
       wrap.classList.add("open");
       wrap.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
     };
+    window.__openExpert = open;
     const close = () => {
       wrap.classList.remove("open");
       wrap.setAttribute("aria-hidden", "true");
@@ -618,7 +649,8 @@
       e.preventDefault();
       const row = a.closest("tr");
       const date = row?.cells?.[0]?.textContent?.trim() || "";
-      showToast(`Tu solicitud para la salida del ${date} se envió a tu asesor.`, "ok");
+      if (window.__openExpert) { window.__openExpert({ salida: date }); }
+      else { showToast(`Escribinos para reservar la salida del ${date}.`, "ok"); }
     });
   });
 
@@ -931,7 +963,7 @@
   var KEY = "sb_publishable_PcVUGfWVD_Aj_gE1H0Jr4g_fKrLn-Ua";
   function isLead(form) {
     if (!form || form.tagName !== "FORM") return false;
-    return (form.classList && form.classList.contains("inquiry-form")) || form.getAttribute("name") === "consulta";
+    return (form.classList && form.classList.contains("inquiry-form")) || (form.getAttribute("name") || "").indexOf("consulta") === 0;
   }
   function val(form, name) {
     var el = form.querySelector('[name="' + name + '"]');
@@ -949,8 +981,12 @@
     var q = new URLSearchParams(window.location.search || "");
     var body = {
       nombre: val(form, "nombre"), apellido: val(form, "apellido"), email: email,
-      telefono: val(form, "telefono"), destino: val(form, "destino"), tipo: val(form, "tipo"),
-      viajeros: val(form, "viajeros"), fecha: val(form, "fecha"), presupuesto: val(form, "presupuesto"),
+      telefono: val(form, "telefono"),
+      destino: val(form, "destino") || [val(form, "region"), val(form, "pais")].filter(Boolean).join(" · ") || val(form, "viaje"),
+      tipo: val(form, "tipo") || val(form, "intent"),
+      viajeros: val(form, "viajeros"),
+      fecha: val(form, "fecha") || val(form, "salida"),
+      presupuesto: val(form, "presupuesto"),
       mensaje: val(form, "mensaje"), asesor: asesorEl ? asesorEl.value : "", hp: hp ? hp.value : "",
       utm_source: q.get("utm_source") || "", utm_medium: q.get("utm_medium") || "", utm_campaign: q.get("utm_campaign") || "", utm_content: q.get("utm_content") || "", utm_term: q.get("utm_term") || "", referrer: document.referrer || ""
     };
