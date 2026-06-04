@@ -146,7 +146,7 @@
           </label>
 
           <label class="check"><input type="checkbox" name="acepta_privacidad" value="si" required /> Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a></label>
-          <label class="check"><input type="checkbox" name="acepta_news" value="si" /> Quiero recibir novedades, salidas exclusivas y otra información de Blisniuk &amp; Amanov</label>
+          <label class="check"><input type="checkbox" name="acepta_news" value="si" /> Quiero recibir novedades y otra información de Blisniuk &amp; Amanov</label>
 
           <button type="submit" class="btn btn-laurel modal-submit">Hablar con un experto</button>
 
@@ -326,7 +326,7 @@
     "Centroamérica": "sudamerica",
     // Estilo / Modalidad / Intereses
     "Pequeño grupo": "pequeno-grupo",
-    "Privado a medida": "privado",
+    "Salida privada": "privado",
     "Privado": "privado",
     "Safari": "safari",
     "Cruceros": "crucero",
