@@ -1,0 +1,1089 @@
+{
+"brochure-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"brochure-2": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"brochure-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-alaska-salvaje-1": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-alaska-salvaje-2": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-alaska-salvaje-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-alaska-salvaje-4": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-bahia-otro-carnaval-1": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-bahia-otro-carnaval-2": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-bahia-otro-carnaval-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-bahia-otro-carnaval-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-butan-nepal-himalaya-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-butan-nepal-himalaya-2": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-butan-nepal-himalaya-3": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-butan-nepal-himalaya-4": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-croacia-islas-dalmatas-1": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-croacia-islas-dalmatas-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-croacia-islas-dalmatas-3": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-croacia-islas-dalmatas-4": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-engadin-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-engadin-2": {
+"w": 1536,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-engadin-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-engadin-4": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-engadin-5": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-engadin-6": {
+"w": 1536,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-engadin-7": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-engadin-8": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-japon-mono-no-aware-1": {
+"w": 722,
+"tiers": [
+480
+]
+},
+"day-japon-mono-no-aware-2": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-japon-mono-no-aware-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-japon-mono-no-aware-4": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-laponia-auroras-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-laponia-auroras-2": {
+"w": 1536,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-laponia-auroras-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-laponia-auroras-4": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-marruecos-imperial-1": {
+"w": 683,
+"tiers": [
+480
+]
+},
+"day-marruecos-imperial-2": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-marruecos-imperial-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-marruecos-imperial-4": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-namibia-dunas-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-namibia-dunas-2": {
+"w": 1918,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-namibia-dunas-3": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-namibia-dunas-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-piamonte-tartufo-1": {
+"w": 1554,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-piamonte-tartufo-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-piamonte-tartufo-3": {
+"w": 1586,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-piamonte-tartufo-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-piamonte-tartufo-5": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-piamonte-tartufo-6": {
+"w": 1408,
+"tiers": [
+480,
+960
+]
+},
+"day-piamonte-tartufo-7": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"day-uzbekistan-ruta-seda-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-uzbekistan-ruta-seda-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"day-uzbekistan-ruta-seda-3": {
+"w": 1250,
+"tiers": [
+480,
+960
+]
+},
+"day-uzbekistan-ruta-seda-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"dest-arctic": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"dest-asia": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"dest-europe": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"dest-india": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"dest-japan": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"dest-kenya": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"dest-mena": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"dest-morocco": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"dest-northamerica": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"dest-southamerica": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"dest-spain": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"hero-alaska-salvaje": {
+"w": 1400,
+"tiers": [
+480,
+960
+]
+},
+"hero-bahia-otro-carnaval": {
+"w": 1023,
+"tiers": [
+480,
+960
+]
+},
+"hero-butan-nepal-himalaya": {
+"w": 1280,
+"tiers": [
+480,
+960
+]
+},
+"hero-coast": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"hero-croacia-islas-dalmatas": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"hero-engadin": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"hero-japon-mono-no-aware": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"hero-laponia-auroras": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"hero-marruecos-imperial": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"hero-namibia-dunas": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"hero-piamonte-tartufo": {
+"w": 1440,
+"tiers": [
+480,
+960
+]
+},
+"hero-savannah": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"hero-uzbekistan-ruta-seda": {
+"w": 1280,
+"tiers": [
+480,
+960
+]
+},
+"intro-engadin": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"intro-quote": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"j-asia": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"j-botswana": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"j-egypt": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"j-japan": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-alaska-salvaje-1": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-alaska-salvaje-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-alaska-salvaje-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-alaska-salvaje-4": {
+"w": 1200,
+"tiers": [
+480,
+960
+]
+},
+"lodge-bahia-otro-carnaval-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-bahia-otro-carnaval-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-bahia-otro-carnaval-3": {
+"w": 1023,
+"tiers": [
+480,
+960
+]
+},
+"lodge-bahia-otro-carnaval-4": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-butan-nepal-himalaya-1": {
+"w": 1200,
+"tiers": [
+480,
+960
+]
+},
+"lodge-butan-nepal-himalaya-2": {
+"w": 676,
+"tiers": [
+480
+]
+},
+"lodge-butan-nepal-himalaya-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-butan-nepal-himalaya-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-croacia-islas-dalmatas-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-croacia-islas-dalmatas-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-croacia-islas-dalmatas-3": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-croacia-islas-dalmatas-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-engadin-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-engadin-2": {
+"w": 1638,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-engadin-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-engadin-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-japon-mono-no-aware-1": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-japon-mono-no-aware-2": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-japon-mono-no-aware-3": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-japon-mono-no-aware-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-laponia-auroras-1": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-laponia-auroras-2": {
+"w": 1638,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-laponia-auroras-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-laponia-auroras-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-marruecos-imperial-1": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-marruecos-imperial-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-marruecos-imperial-3": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-marruecos-imperial-4": {
+"w": 1023,
+"tiers": [
+480,
+960
+]
+},
+"lodge-namibia-dunas-1": {
+"w": 1110,
+"tiers": [
+480,
+960
+]
+},
+"lodge-namibia-dunas-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-namibia-dunas-3": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-namibia-dunas-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-piamonte-tartufo-1": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"lodge-piamonte-tartufo-2": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-piamonte-tartufo-3": {
+"w": 1440,
+"tiers": [
+480,
+960
+]
+},
+"lodge-piamonte-tartufo-4": {
+"w": 1282,
+"tiers": [
+480,
+960
+]
+},
+"lodge-uzbekistan-ruta-seda-1": {
+"w": 1136,
+"tiers": [
+480,
+960
+]
+},
+"lodge-uzbekistan-ruta-seda-2": {
+"w": 1200,
+"tiers": [
+480,
+960
+]
+},
+"lodge-uzbekistan-ruta-seda-3": {
+"w": 1800,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"lodge-uzbekistan-ruta-seda-4": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"logo-horizontal": {
+"w": 1200,
+"tiers": [
+480,
+960
+]
+},
+"logo-isotipo": {
+"w": 512,
+"tiers": [
+480
+]
+},
+"next-up": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"route-map": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"way-group": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"way-private": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"why-banner": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"wildlife-alaska-salvaje": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"wildlife-bahia-otro-carnaval": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"wildlife-butan-nepal-himalaya": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"wildlife-croacia-islas-dalmatas": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"wildlife-japon-mono-no-aware": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"wildlife-laponia-auroras": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"wildlife-marruecos-imperial": {
+"w": 1024,
+"tiers": [
+480,
+960
+]
+},
+"wildlife-namibia-dunas": {
+"w": 1920,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"wildlife-piamonte-tartufo": {
+"w": 1750,
+"tiers": [
+480,
+960,
+1440
+]
+},
+"wildlife-uzbekistan-ruta-seda": {
+"w": 1600,
+"tiers": [
+480,
+960,
+1440
+]
+}
+}
