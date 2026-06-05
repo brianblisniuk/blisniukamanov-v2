@@ -3630,3 +3630,28 @@ p  { margin: 0 0 1em; }
   .newsletter-modal-card { padding: 30px 22px; }
   .newsletter-modal h3 { font-size: 26px; }
 }
+
+
+/* ===== Calendario de salidas (P2) ===== */
+.departures-calendar { background: var(--bone); }
+.departures-calendar .eyebrow.center { display: block; text-align: center; }
+.departures-calendar h2 { text-align: center; }
+.departures-calendar .lede { text-align: center; max-width: 640px; margin-left: auto; margin-right: auto; }
+.cal-list { list-style: none; margin: 36px auto 0; max-width: 880px; padding: 0; border-top: 1px solid var(--line); }
+.cal-list li { margin: 0; }
+.cal-row { display: grid; grid-template-columns: 96px 1fr auto auto; align-items: center; gap: 20px; padding: 18px 10px; border-bottom: 1px solid var(--line); color: var(--ink); transition: background .15s ease; }
+.cal-row:hover { background: rgba(26,26,26,0.03); }
+.cal-month { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--laurel); }
+.cal-trip { font-family: var(--serif); font-size: 19px; line-height: 1.2; }
+.cal-date { font-size: 13px; color: var(--ink-mute); white-space: nowrap; }
+.cal-status { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; display: inline-flex; align-items: center; gap: 7px; color: var(--ink-mute); }
+.cal-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--laurel); }
+.cal-status.few { color: #9A5A3A; }
+.cal-status.few::before { background: #9A5A3A; }
+@media (max-width: 720px) {
+  .cal-row { grid-template-columns: 1fr auto; grid-template-areas: "month status" "trip date"; gap: 4px 14px; padding: 16px 4px; }
+  .cal-month { grid-area: month; }
+  .cal-status { grid-area: status; justify-self: end; }
+  .cal-trip { grid-area: trip; font-size: 16px; }
+  .cal-date { grid-area: date; justify-self: end; }
+}
