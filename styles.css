@@ -25,19 +25,19 @@
    ========================= */
 :root {
   /* Brand palette — Blisniuk & Amanov */
-  --laurel: #3D5A3E;          /* primary — Mediterranean Laurel */
-  --laurel-deep: #1F2E20;     /* depth — Deep Forest */
-  --laurel-soft: #4A6A4B;     /* hover */
-  --bone: #F5F1E8;            /* paper / surface */
-  --bone-2: #ECE6D8;          /* paper alt */
-  --ink: #1A1A1A;             /* text */
-  --ink-2: #2B2B2B;
-  --stone: #8B8478;           /* secondary text — Stone */
-  --brass: #3D5A3E;           /* accent — Aged Brass (use sparingly) */
-  --line: #E5DED0;
-  --line-soft: #EFE9DA;
-  --white: #FFFFFF;
-  --black: #0E0E0E;
+  --laurel: #E8E6E0;          /* primary — Mediterranean Laurel */
+  --laurel-deep: #8A8F97;     /* depth — Deep Forest */
+  --laurel-soft: #F4F2EC;     /* hover */
+  --bone: #0A0A0B;            /* paper / surface */
+  --bone-2: #101012;          /* paper alt */
+  --ink: #E8E6E0;             /* text */
+  --ink-2: #D8D6CF;
+  --stone: #8A8F97;           /* secondary text — Stone */
+  --brass: #8A8F97;           /* accent — Aged Brass (use sparingly) */
+  --line: #3A3B3F;
+  --line-soft: #232428;
+  --white: #101012;
+  --black: #0A0A0B;
   --paper: var(--bone);
   --paper-2: var(--bone-2);
   --ink-mute: var(--stone);
@@ -51,8 +51,8 @@
   --cream: var(--bone);
 
   /* Typography */
-  --serif: "GT Sectra Display", "Cormorant Garamond", "Times New Roman", serif;
-  --sans: "Inter", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --serif: "Marcellus", "Cormorant Garamond", serif;
+  --sans: "Jost", system-ui, sans-serif;
   --mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, monospace;
 
   --maxw: 1380px;
