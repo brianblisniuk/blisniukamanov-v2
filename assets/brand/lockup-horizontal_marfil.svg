@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="160" viewBox="0 0 560 160">
+  <g transform="translate(10,10) scale(0.7)">
+  <circle cx="100" cy="100" r="94" fill="none" stroke="#E8E6E0" stroke-width="3"></circle>
+  <g stroke="#E8E6E0" stroke-width="3" fill="none">
+    <circle cx="100" cy="100" r="46"></circle>
+    <ellipse cx="100" cy="100" rx="19" ry="46"></ellipse>
+    <line x1="54" y1="100" x2="146" y2="100"></line>
+  </g>
+  <path d="M 100,20 l 4.4,10 10.6,1.1 -8,7.2 2.3,10.5 -9.3,-5.5 -9.3,5.5 2.3,-10.5 -8,-7.2 10.6,-1.1 z" fill="#E8E6E0"></path>
+</g>
+  <text x="180" y="72" font-family="Marcellus, serif" font-size="34" letter-spacing="8" fill="#E8E6E0">PASAPORTE</text>
+  <text x="180" y="116" font-family="Marcellus, serif" font-size="34" letter-spacing="8" fill="#8A8F97">NEGRO</text>
+</svg>
