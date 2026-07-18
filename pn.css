@@ -1,0 +1,15 @@
+/* ===== Pasaporte Negro — overrides (carga después de styles.css) ===== */
+h1 em, h2 em, h3 em, blockquote em {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.brand-lockup { height: 24px; display: block; }
+.footer-sello { width: 54px; height: 54px; display: block; }
+.site-header { background: rgba(10, 10, 11, 0.92); backdrop-filter: blur(8px); }
+.dot-status.open { background: #E8E6E0; }
+.dot-status.few { background: #8A8F97; }
+.dot-status.closed { background: #3A3B3F; }
+.toast[data-kind="error"] { background: #3A3B3F; }
+.label-pill { background: rgba(10, 10, 11, 0.78); color: #E8E6E0; }
