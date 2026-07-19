@@ -1,12 +1,12 @@
 """
-Page generator for Blisniuk & Amanov.
+Page generator for Pasaporte Negro.
 Generates journey detail pages + region pages from data structures.
 
 Usage: python3 tools/build.py
 """
 import os, json, html as html_lib
 
-REPO = "/home/user/blisniukamanov"
+REPO = "/home/user/sitio"
 
 # Map of stop name → [lat, lng]. Used to render the interactive Leaflet map.
 # Add new stops here when adding a new journey.
@@ -210,7 +210,7 @@ UTILITY_BAR = """  <div class="utility-bar">
       <div class="utility-left">
         <a href="tel:+541161395550" class="speak">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.91.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7a2 2 0 0 1 1.72 2.03z"/></svg>
-          Hablar con un experto · +54 11 6139 5550
+          Enviar consulta · +54 11 6139 5550
         </a>
         <span class="utility-status">· Atendemos hoy de 9:00 a 20:00</span>
       </div>
@@ -256,7 +256,7 @@ FOOTER = """  <footer class="site-footer">
       <div class="footer-brand">
         <div class="footer-brand-row">
           <span class="footer-mark">B&amp;a</span>
-          <h3>Blisniuk &amp; Amanov</h3>
+          <h3>Pasaporte Negro</h3>
         </div>
         <p>Casa de viajes en pequeño grupo y a medida. Casa central en <a href="https://maps.google.com/?q=Manuel+Ugarte+2035+Buenos+Aires" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.85); border-bottom:1px solid rgba(255,255,255,0.3);">Manuel Ugarte 2035, Buenos Aires</a>.</p>
         <div class="socials">
@@ -268,7 +268,7 @@ FOOTER = """  <footer class="site-footer">
       <div class="footer-col"><h5>Servicios</h5><ul><li><a href="catalogos.html">Catálogos</a></li><li><a href="journeys.html">Todos los viajes</a></li><li><a href="small-group.html">Pequeñas expediciones</a></li><li><a href="destinations.html">Destinos</a></li></ul></div>
       <div class="footer-col"><h5>Legal</h5><ul><li><a href="terminos.html">Términos y condiciones</a></li><li><a href="privacidad.html">Privacidad</a></li><li><a href="cookies.html">Cookies</a></li></ul></div>
     </div>
-    <div class="footer-bottom">© 2026 Blisniuk &amp; Amanov S.A. · RNAV Legajo 20943</div>
+    <div class="footer-bottom">© 2026 Pasaporte Negro S.A. · RNAV Legajo 20943</div>
   </footer>
 
   <script src="script.js"></script>
@@ -345,7 +345,7 @@ def build_journey(j):
 {items}
         </ul>"""
 
-    return f"""{HEAD(j['title'] + ' · Blisniuk & Amanov', j['meta_desc'])}
+    return f"""{HEAD(j['title'] + ' · Pasaporte Negro', j['meta_desc'])}
 
 {UTILITY_BAR}
 {HEADER}
@@ -480,7 +480,7 @@ def build_region(r):
           </div>
         </a>""" for c in r['countries']
     ])
-    return f"""{HEAD('Explorar ' + r['name'] + ' · Blisniuk & Amanov', r['meta_desc'])}
+    return f"""{HEAD('Explorar ' + r['name'] + ' · Pasaporte Negro', r['meta_desc'])}
 
 {UTILITY_BAR}
 {HEADER}
