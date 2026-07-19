@@ -1,4 +1,4 @@
-# Netlify configuration for Blisniuk & Amanov
+# Netlify — Pasaporte Negro
 
 [build]
   publish = "."
@@ -7,11 +7,6 @@
 [[redirects]]
   from = "/viajes"
   to = "/journeys.html"
-  status = 200
-
-[[redirects]]
-  from = "/pequenas-expediciones"
-  to = "/small-group.html"
   status = 200
 
 [[redirects]]
