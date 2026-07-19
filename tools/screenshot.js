@@ -4,7 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const { chromium } = require("playwright");
 
-const repo = "/home/user/blisniukamanov";
+const repo = "/home/user/sitio";
 const outDir = path.join(repo, "_compare");
 fs.mkdirSync(outDir, { recursive: true });
 
