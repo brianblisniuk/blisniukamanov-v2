@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Blisniuk & Amanov — descarga 37 fotos curadas de Unsplash
+# Pasaporte Negro — descarga 37 fotos curadas de Unsplash
 # ============================================================================
 # Cómo funciona:
 # 1. Para cada slug, fetch del HTML de unsplash.com/photos/<slug>
