@@ -21,6 +21,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg" />
   <link rel="stylesheet" href="styles.css" /><link rel="stylesheet" href="pn.css" />
+<script>
+  /* Móvil: quitar <source> de los videos del hero antes de cualquier request (ahorro ~32 MB) */
+  (function(){ if (window.innerWidth < 900) {
+    document.addEventListener('DOMContentLoaded', function(){
+      document.querySelectorAll('.spotlight video source').forEach(function(s){ s.remove(); });
+      document.querySelectorAll('.spotlight video').forEach(function(v){ v.load(); });
+    });
+  }})();
+  </script>
 </head>
 <body>
 
@@ -41,18 +50,17 @@
       </a>
 
       <div class="nav-right">
-        <a class='btn btn-ghost' href='#contact'>Consultar</a>
+        <a class='btn btn-ghost' href='/contact'>Consultar</a>
       </div>
     </div>
   </header>
 
-  <!-- Mobile drawer -->
   <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
     <div class="drawer-inner">
       <a href='/journeys'>Expediciones</a>
-      <a href="#newsletter">Suscribirme</a>
-      <a href="#brochures">Catálogos</a>
-      <a class='btn btn-dark' href='/journeys'>Encontrar tu expedición</a>
+      <a href='/blog/'>Cuaderno</a>
+      <a href='/catalogos'>Dossiers</a>
+      <a class='btn btn-dark' href='/contact'>Consultar</a>
     </div>
   </aside>
 
@@ -72,9 +80,7 @@
       </div>
 
       <div class="slide">
-        <video class="slide-media" muted loop playsinline preload="metadata" poster="assets/img/hero-engadin.jpg">
-          <source src="assets/video/hero-3.mp4" type="video/mp4" />
-        </video>
+        <img class="slide-media" src="assets/img/hero-engadin-navidad.webp" srcset="assets/img/hero-engadin-navidad-960.webp 960w, assets/img/hero-engadin-navidad-1440.webp 1440w, assets/img/hero-engadin-navidad.webp 1600w" sizes="100vw" alt="Engadina en invierno" loading="lazy" decoding="async" />
       </div>
 
       <div class="spotlight-content">
@@ -100,22 +106,60 @@
         <button id="slideNext" aria-label="Siguiente">›</button>
       </div>
     </div>
-
-    <!-- Next up strip -->
-    <div class="next-up">
-      <div class="next-up-inner">
-        <span class="label">A continuación</span>
-        <img src="assets/img/next-up.jpg" alt="Encuentro con vida salvaje" loading="lazy" />
-        <span class="next-text">Namibia · Noviembre 2026 — el desierto más antiguo del mundo</span>
-        <span class="next-arrow">→</span>
-      </div>
-    </div>
   </section>
 
+  <script>
+  /* Los videos del hero pesan 16 MB por pieza. En pantalla chica se quitan las
+     fuentes antes de que ningún script pida reproducir: queda el poster. En
+     escritorio se carga solo el de la diapositiva visible. Corre en el parseo. */
+  (function () {
+    var chica = window.innerWidth < 900 || (navigator.connection && navigator.connection.saveData);
+    var videos = document.querySelectorAll('.spotlight-frame video.slide-media');
+    if (!videos.length) return;
+    if (chica) {
+      for (var i = 0; i < videos.length; i++) {
+        var v = videos[i];
+        var fuentes = v.querySelectorAll('source');
+        for (var k = 0; k < fuentes.length; k++) fuentes[k].parentNode.removeChild(fuentes[k]);
+        v.removeAttribute('autoplay');
+        v.setAttribute('preload', 'none');
+        try { v.load(); } catch (e) {}
+        var poster = v.getAttribute('poster');
+        if (poster) { v.style.background = 'center/cover no-repeat url("' + poster + '")'; }
+      }
+      return;
+    }
+    function activar(v) {
+      if (!v) return;
+      if (v.getAttribute('preload') === 'none') { v.setAttribute('preload', 'auto'); try { v.load(); } catch (e) {} }
+      var p = v.play(); if (p && p.catch) p.catch(function () {});
+    }
+    function arrancar() {
+      activar(videos[0]);
+      document.querySelectorAll('.spotlight-frame .slide').forEach(function (s) {
+        new MutationObserver(function () {
+          var v = s.querySelector('video.slide-media');
+          if (!v) return;
+          if (s.classList.contains('active')) activar(v);
+          else { try { v.pause(); } catch (e) {} }
+        }).observe(s, { attributes: true, attributeFilter: ['class'] });
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar);
+    else arrancar();
+  })();
+  </script>
+
   <!-- Intro -->
+  <a class="next-up" href="/namibia-dunas">
+    <span class="nu-k">A continuación</span>
+    <span class="nu-t">Namibia · Noviembre 2026 — el desierto más antiguo del mundo</span>
+    <span class="nu-a">→</span>
+  </a>
+
   <section class="intro">
     <div class="container">
-      <p class="intro-text">Once expediciones por año, en grupos de hasta diez. Cada una incluye dos accesos: puertas que no se compran con una entrada. <em>El detalle es de los que viajan.</em></p>
+      <p class="intro-text">Once expediciones por año, cada destino una sola vez. <em>Diez lugares, dos anfitriones de la casa y dos accesos en cada una.</em></p>
     </div>
   </section>
 
@@ -131,73 +175,136 @@
         <button class="tab" data-tab="new">Más adelante</button>
       </div>
 
-      <div class="cards-3 tab-panel active" data-panel="loved">
-        <a class='img-card' href='/uzbekistan-ruta-seda'>
-          <img src="assets/img/hero-uzbekistan-ruta-seda.jpg" alt="Uzbekistán" loading="lazy" />
-          <span class="label-pill">Asia Central · Septiembre 2026</span>
-          <div class="img-card-body">
-            <h3>Uzbekistán</h3>
-            <p>Tashkent, Khiva, Bujará y Samarcanda: la Ruta de la Seda, con el Registán a solas al amanecer.</p>
-          </div>
-        </a>
-        <a class='img-card' href='/piamonte-tartufo'>
-          <img src="assets/img/hero-piamonte-tartufo.jpg" alt="Piemonte" loading="lazy" />
+      <div class="cards-3 tab-panel active" data-panel="loved"><a class='img-card' href='/piamonte-tartufo'>
+          <img srcset="assets/img/hero-piamonte-tartufo-480.webp 480w, assets/img/hero-piamonte-tartufo-960.webp 960w, assets/img/hero-piamonte-tartufo.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-piamonte-tartufo.webp" alt="Piemonte" loading="lazy" />
           <span class="label-pill">Italia · Octubre 2026</span>
           <div class="img-card-body">
             <h3>Piemonte</h3>
             <p>Una villa privada en las Langhe durante la semana de la trufa blanca.</p>
           </div>
-        </a>
-        <a class='img-card' href='/namibia-dunas'>
-          <img src="assets/img/hero-namibia-dunas.jpg" alt="Namibia" loading="lazy" />
+        </a><a class='img-card' href='/namibia-dunas'>
+          <img srcset="assets/img/hero-namibia-dunas-480.webp 480w, assets/img/hero-namibia-dunas-960.webp 960w, assets/img/hero-namibia-dunas-1440.webp 1440w, assets/img/hero-namibia-dunas.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-namibia-dunas.webp" alt="Namibia" loading="lazy" />
           <span class="label-pill">África austral · Noviembre 2026</span>
           <div class="img-card-body">
             <h3>Namibia</h3>
             <p>Del corazón geológico del Namib a las aguadas de Etosha, bajo el cielo oscuro de NamibRand.</p>
           </div>
-        </a>
-      </div>
-
-      <div class="cards-3 tab-panel" data-panel="new">
-        <a class='img-card' href='/engadin-navidad'>
-          <img src="assets/img/hero-engadin.jpg" alt="Engadina" loading="lazy" />
+        </a><a class='img-card' href='/engadin-navidad'>
+          <img srcset="assets/img/hero-engadin-navidad-480.webp 480w, assets/img/hero-engadin-navidad-960.webp 960w, assets/img/hero-engadin-navidad-1440.webp 1440w, assets/img/hero-engadin-navidad.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-engadin-navidad.webp" alt="Engadina" loading="lazy" />
           <span class="label-pill">Suiza · Diciembre 2026</span>
           <div class="img-card-body">
             <h3>Engadina</h3>
             <p>Una casa engadina entera para el grupo y la semana de Navidad como la vive el valle.</p>
           </div>
-        </a>
-        <a class='img-card' href='/laponia-auroras'>
-          <img src="assets/img/hero-laponia-auroras.jpg" alt="Laponia" loading="lazy" />
+        </a><a class='img-card' href='/laponia-auroras'>
+          <img srcset="assets/img/hero-laponia-auroras-480.webp 480w, assets/img/hero-laponia-auroras-960.webp 960w, assets/img/hero-laponia-auroras-1440.webp 1440w, assets/img/hero-laponia-auroras.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-laponia-auroras.webp" alt="Laponia" loading="lazy" />
           <span class="label-pill">Finlandia y Noruega · Enero 2027</span>
           <div class="img-card-body">
             <h3>Laponia</h3>
             <p>Del corazón sami de Inari al fiordo de Lyngen, con la aurora al alcance de la cama.</p>
           </div>
-        </a>
-        <a class='img-card' href='/bahia-otro-carnaval'>
-          <img src="assets/img/hero-bahia-otro-carnaval.jpg" alt="Bahía" loading="lazy" />
+        </a><a class='img-card' href='/bahia-otro-carnaval'>
+          <img srcset="assets/img/hero-bahia-otro-carnaval-480.webp 480w, assets/img/hero-bahia-otro-carnaval-960.webp 960w, assets/img/hero-bahia-otro-carnaval.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-bahia-otro-carnaval.webp" alt="Bahía" loading="lazy" />
           <span class="label-pill">Brasil · Febrero 2027</span>
           <div class="img-card-body">
             <h3>Bahía</h3>
             <p>El otro carnaval de Salvador, desde un camarote y con antropólogo, y el cierre en Trancoso.</p>
           </div>
-        </a>
-      </div>
+        </a><a class='img-card' href='/japon-mono-no-aware'>
+          <img srcset="assets/img/hero-japon-mono-no-aware-480.webp 480w, assets/img/hero-japon-mono-no-aware-960.webp 960w, assets/img/hero-japon-mono-no-aware-1440.webp 1440w, assets/img/hero-japon-mono-no-aware.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-japon-mono-no-aware.webp" alt="Japón" loading="lazy" />
+          <span class="label-pill">Japón · Marzo 2027</span>
+          <div class="img-card-body">
+            <h3>Japón</h3>
+            <p>De Tokio a las islas de arte del mar interior, en el momento de la flor que cae.</p>
+          </div>
+        </a></div>
+
+      <div class="cards-3 tab-panel" data-panel="new"><a class='img-card' href='/butan-nepal-himalaya'>
+          <img srcset="assets/img/hero-butan-nepal-himalaya-480.webp 480w, assets/img/hero-butan-nepal-himalaya-960.webp 960w, assets/img/hero-butan-nepal-himalaya.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-butan-nepal-himalaya.webp" alt="Bután y Nepal" loading="lazy" />
+          <span class="label-pill">Bután y Nepal · Abril 2027</span>
+          <div class="img-card-body">
+            <h3>Bután y Nepal</h3>
+            <p>Doce noches por el Himalaya budista, del valle de Kathmandu a los de Bután.</p>
+          </div>
+        </a><a class='img-card' href='/marruecos-imperial'>
+          <img srcset="assets/img/hero-marruecos-imperial-480.webp 480w, assets/img/hero-marruecos-imperial-960.webp 960w, assets/img/hero-marruecos-imperial.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-marruecos-imperial.webp" alt="Marruecos" loading="lazy" />
+          <span class="label-pill">Marruecos · Mayo 2027</span>
+          <div class="img-card-body">
+            <h3>Marruecos</h3>
+            <p>Nueve noches por el Marruecos de las ciudades imperiales, de Rabat a Marrakech, con el Alto Atlas en el medio.</p>
+          </div>
+        </a><a class='img-card' href='/croacia-islas-dalmatas'>
+          <img srcset="assets/img/hero-croacia-islas-dalmatas-480.webp 480w, assets/img/hero-croacia-islas-dalmatas-960.webp 960w, assets/img/hero-croacia-islas-dalmatas-1440.webp 1440w, assets/img/hero-croacia-islas-dalmatas.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-croacia-islas-dalmatas.webp" alt="Dalmacia" loading="lazy" />
+          <span class="label-pill">Croacia · Junio 2027</span>
+          <div class="img-card-body">
+            <h3>Dalmacia</h3>
+            <p>Ocho noches por las islas dálmatas a bordo de un catamarán tomado entero para el grupo, de Split a Dubrovnik.</p>
+          </div>
+        </a><a class='img-card' href='/alaska-salvaje'>
+          <img srcset="assets/img/hero-alaska-salvaje-480.webp 480w, assets/img/hero-alaska-salvaje-960.webp 960w, assets/img/hero-alaska-salvaje.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-alaska-salvaje.webp" alt="Alaska" loading="lazy" />
+          <span class="label-pill">Estados Unidos · Julio 2027</span>
+          <div class="img-card-body">
+            <h3>Alaska</h3>
+            <p>Diez noches por la Alaska salvaje, de los osos de Lake Clark a los glaciares del mar.</p>
+          </div>
+        </a><a class='img-card' href='/uzbekistan-ruta-seda'>
+          <img srcset="assets/img/hero-uzbekistan-ruta-seda-480.webp 480w, assets/img/hero-uzbekistan-ruta-seda-960.webp 960w, assets/img/hero-uzbekistan-ruta-seda.webp 1600w" sizes="(max-width: 768px) 100vw, 33vw" decoding="async" src="assets/img/hero-uzbekistan-ruta-seda.webp" alt="Uzbekistán" loading="lazy" />
+          <span class="label-pill">Uzbekistán · Septiembre 2027</span>
+          <div class="img-card-body">
+            <h3>Uzbekistán</h3>
+            <p>Diez noches por la Ruta de la Seda uzbeka, de Tashkent a Samarcanda.</p>
+          </div>
+        </a></div>
 
     </div>
   </section>
 
   <!-- Quote band -->
   <section class="quote-band">
-    <img src="assets/img/intro-quote.jpg" alt="Costa rocosa al amanecer" loading="lazy" />
+    <img src="assets/img/banda-cita.webp" srcset="assets/img/banda-cita-960.webp 960w, assets/img/banda-cita.webp 1440w" sizes="100vw" alt="" loading="lazy" decoding="async" />
     <div class="container">
-      <blockquote>"Puertas que no se compran con una entrada. El detalle es de los que viajan."</blockquote>
-      <cite>— La casa</cite>
+      <blockquote>Lo mejor de un viaje casi nunca figura en el itinerario. Mi trabajo es que igual esté previsto.</blockquote>
+      <cite>— Brian Blisniuk</cite>
     </div>
   </section>
 
   <!-- Why travel banner -->
+  <section class="acceso" id="acceso">
+    <div class="container">
+      <span class="eyebrow">Acceso, no exceso</span>
+      <h2>Qué es un acceso</h2>
+      <div class="acceso-lead">
+        <p>Un acceso es una puerta que no se abre con una entrada: la parte del viaje que el dinero solo no consigue, porque depende de una relación, de un permiso con nombre propio o de un momento que no está a la venta.</p>
+        <p>No es un lugar caro. A una mesa cara se llega reservando; a un acceso se llega porque alguien del otro lado dijo que sí. Por eso cada expedición de la casa incluye dos, y por eso el detalle de cada uno se comparte con los que viajan y no antes.</p>
+      </div>
+      <div class="acceso-reglas">
+        <div class="ar"><span class="ar-n">Uno</span><h3>No se compra</h3><p>Si un viajero con tiempo y presupuesto lo consigue llamando o reservando, es un buen restaurante o un buen hotel. No es un acceso.</p></div>
+        <div class="ar"><span class="ar-n">Dos</span><h3>Tiene un nombre detrás</h3><p>Depende de que una persona concreta abra la puerta. Vive en una relación, no en un ticket, y por eso se sostiene en el tiempo o se pierde.</p></div>
+        <div class="ar"><span class="ar-n">Tres</span><h3>Se puede escribir tal cual ocurre</h3><p>Entra en el dossier con la hora, el lugar y qué pasa ahí. Si hay que inflarlo para que suene bien, todavía no está listo.</p></div>
+      </div>
+      <div class="acceso-ejemplos">
+        <figure class="ae ae-img">
+          <img src="assets/img/acceso-giza.webp" srcset="assets/img/acceso-giza-480.webp 480w, assets/img/acceso-giza-960.webp 960w, assets/img/acceso-giza.webp 1040w" sizes="(max-width: 768px) 100vw, 50vw" alt="Las pirámides de Giza al atardecer" loading="lazy" decoding="async" />
+          <span class="label-pill">Acceso</span>
+          <figcaption>Las pirámides de Giza, Egipto — la meseta fuera del horario público, para el grupo solo</figcaption>
+        </figure>
+        <div class="ae ae-txt">
+          <h3>Audiencias privadas con líderes</h3>
+          <p>Líderes políticos, autoridades locales o referentes de una comunidad, según el destino. Una hora sentados con alguien que tuvo que tomar decisiones ahí, para escuchar cómo fue y preguntar lo que quieras. No una charla protocolar: una conversación.</p>
+        </div>
+        <figure class="ae ae-img">
+          <img src="assets/img/acceso-lafite.webp" srcset="assets/img/acceso-lafite-480.webp 480w, assets/img/acceso-lafite-960.webp 960w, assets/img/acceso-lafite.webp 1440w" sizes="(max-width: 768px) 100vw, 50vw" alt="Barricas en una bodega subterránea" loading="lazy" decoding="async" />
+          <span class="label-pill">Acceso</span>
+          <figcaption>Las bodegas privadas de Château Lafite Rothschild, Pauillac — cata bajo tierra, con la puerta cerrada</figcaption>
+        </figure>
+        <div class="ae ae-txt">
+          <h3>Quien sabe, viajando con vos</h3>
+          <p>Un arqueólogo en el yacimiento que excavó, un astrónomo bajo el cielo que estudia, un historiador en la ciudad que escribió. También un biólogo en el terreno, un sommelier en la cantina y un chef en su cocina. No un guía que repite: alguien que dedicó la vida a eso y contesta lo que le preguntes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="why-banner">
     <img src="assets/img/why-banner.jpg" alt="Dunas del desierto al amanecer" loading="lazy" />
     <div class="container">
@@ -210,25 +317,41 @@
   </section>
 
   <!-- Stats strip -->
-  <section class="stats-strip">
+  <section class="stats-strip" id="metodo">
     <div class="container">
+      <div class="metodo-head"><span class="eyebrow">El método</span><h2>Cómo trabajamos</h2></div>
       <div class="stats-grid">
         <div class="stat">
-          <h5>Acceso</h5>
-          <p>Cada expedición incluye dos accesos: lo que el dinero solo no consigue. El detalle se comparte con los que viajan.</p>
+          <h5>Fecha fija</h5>
+          <p>Cada expedición sale una vez al año, en una fecha publicada con meses de anticipación. El lugar se reserva con seña y el detalle contractual se entrega junto con la propuesta. No se arma sobre la marcha ni se repite en temporada alta.</p>
         </div>
         <div class="stat">
           <h5>Autoría</h5>
-          <p>Los itinerarios se escriben en la casa, día por día. Lo que leés es lo que hacés.</p>
+          <p>Los itinerarios se escriben acá, día por día, y no se montan sobre paquetes de terceros. Cada jornada dice qué hacés, dónde dormís y a qué hora. Nada entra al papel sin estar cerrado: si falta el dato, se escribe sin él.</p>
         </div>
         <div class="stat">
           <h5>Afinidad</h5>
-          <p>Grupos de hasta diez viajeros. La mesa compartida es parte del viaje.</p>
+          <p>Diez es un número elegido, no un techo comercial. Alcanza para tomar una casa entera, entrar donde no entra un contingente y que la mesa de la noche siga siendo una mesa. Los anfitriones viajan con el grupo de principio a fin.</p>
         </div>
         <div class="stat">
           <h5>Todo adentro</h5>
-          <p>El precio incluye el programa completo: mesas, traslados y accesos. Sin sorpresas al final.</p>
+          <p>Entran las noches, las mesas del itinerario, los traslados internos, los accesos y los anfitriones. Quedan afuera los vuelos internacionales, el seguro y lo que consumas por tu cuenta. La lista completa está en cada dossier, antes de que decidas.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="casa" id="casa">
+    <div class="container casa-grid">
+      <div class="casa-head">
+        <span class="eyebrow">Quién está detrás</span>
+        <h2>La casa</h2>
+      </div>
+      <div class="casa-texto">
+        <p class="casa-lead">Pasaporte Negro es una casa chica, y esa es la decisión, no la etapa.</p>
+        <p>Prefiero once viajes por año que salgan exactamente como están escritos, antes que cincuenta que dependan de que todo salga bien. Es la única forma que conozco de firmar un itinerario y después poder sostenerlo, de la primera noche al último traslado.</p>
+        <p>Del otro lado de este correo estoy yo. No hay centro de atención ni formulario que derive a nadie: escribís y te contesto, y si la expedición que mirás no es para vos, te lo voy a decir.</p>
+        <p class="casa-firma">Brian Blisniuk — Buenos Aires</p>
       </div>
     </div>
   </section>
@@ -238,62 +361,49 @@
     <div class="container footer-grid">
       <div class="footer-brand">
         <div class="footer-brand-row">
-          <img class="footer-sello" src="assets/brand/sello-principal_marfil.svg" alt="Pasaporte Negro" />
+          <img class="footer-sello" src="assets/brand/simbolo_marfil.svg" alt="Pasaporte Negro" />
           <h3>Pasaporte Negro</h3>
         </div>
         <p>Turismo de lujo en expediciones de hasta diez viajeros. Buenos Aires, Argentina.</p>
-        <p style="margin: 8px 0 14px;">Escribinos a <a href="mailto:pasaportenegroviajes@gmail.com" style="color:rgba(255,255,255,0.85); border-bottom:1px solid rgba(255,255,255,0.3);">pasaportenegroviajes@gmail.com</a></p>
-
-        <form class="newsletter" id="newsletter" name="newsletter" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/gracias.html"><input type="hidden" name="form-name" value="newsletter" /><p class="hidden-field"><label>No completar: <input name="bot-field" /></label></p>
-          <strong style="color:var(--white); font-family:var(--serif); font-size:24px; line-height:1.1;">Una carta al mes</strong>
-          <span class="terms" style="margin: 4px 0 8px;">Un destino, una historia, una recomendación. Nada más.</span>
-          <div class="newsletter-row">
-            <input type="text" placeholder="Nombre" />
-            <input type="text" placeholder="Apellido" />
-          </div>
-          <input type="email" placeholder="Correo electrónico" required />
-          <div class="radio-row" aria-label="¿Sos asesor de viajes?">
-            <span>¿Sos asesor de viajes?</span>
-            <label><input type="radio" name="advisor" value="si" /> Sí</label>
-            <label><input type="radio" name="advisor" value="no" defaultChecked /> No</label>
-          </div>
-          <span class="terms">Al registrarte aceptas nuestros <a href='/terminos'>Términos de uso</a> y <a href='/privacidad'>Política de privacidad</a>, incluyendo el envío de comunicaciones.</span>
-          <button class="btn btn-laurel" type="submit">Suscribirme</button>
-        </form>
-
+        <p style="margin: 8px 0 14px;">Escribinos a <a href="mailto:pasaportenegroviajes@gmail.com" style="color:rgba(232,230,224,0.85); border-bottom:1px solid rgba(232,230,224,0.3);">pasaportenegroviajes@gmail.com</a></p>
         <div class="socials">
           <a href="https://www.instagram.com/pasaportenegro" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm10 2c1.66 0 3 1.34 3 3v10c0 1.66-1.34 3-3 3H7c-1.66 0-3-1.34-3-3V7c0-1.66 1.34-3 3-3h10zm-5 3a5 5 0 100 10 5 5 0 000-10zm0 2a3 3 0 110 6 3 3 0 010-6zm5.5-.5a1 1 0 100 2 1 1 0 000-2z"/></svg></a>
-          <a href="https://www.tiktok.com/@pasaportenegro" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.81 20.1a6.34 6.34 0 0 0 10.86-4.43V8.45a8.16 8.16 0 0 0 4.77 1.52V6.69h-1.85z"/></svg></a>
+          <a href="https://www.tiktok.com/@pasaportenegro" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-2.59-2.59c.27 0 .53.04.78.12V9.77a5.76 5.76 0 0 0-.78-.05 5.68 5.68 0 1 0 5.68 5.68V9.29a7.35 7.35 0 0 0 4.29 1.37V7.57a4.28 4.28 0 0 1-3.23-1.75z"/></svg></a>
         </div>
+        <form class="newsletter" id="newsletter" name="newsletter" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" action="/gracias.html"><input type="hidden" name="form-name" value="newsletter" /><p class="hidden-field"><label>No completar: <input name="bot-field" /></label></p>
+          <strong style="color:var(--ink); font-family:var(--serif); font-size:24px; line-height:1.1;">Una carta al mes</strong>
+          <span class="terms" style="margin: 4px 0 8px;">Un destino, una historia, una recomendación. Nada más.</span>
+          <div class="newsletter-row">
+            <input type="text" name="nombre" placeholder="Nombre" />
+            <input type="text" name="apellido" placeholder="Apellido" />
+          </div>
+          <input type="email" name="email" placeholder="Correo electrónico" required />
+          <span class="terms">Al registrarte aceptás nuestros <a href="/terminos">Términos de uso</a> y la <a href="/privacidad">Política de privacidad</a>, incluyendo el envío de comunicaciones.</span>
+          <button class="btn btn-laurel" type="submit">Suscribirme</button>
+        </form>
       </div>
 
       <div class="footer-col">
-        <h5>Compañía</h5>
-        <ul>
-          <li><a href='/contact'>Contacto</a></li>
-        </ul>
+        <h5>La casa</h5>
+        <a href="/#casa">Quién está detrás</a>
+        <a href="/#acceso">Qué es un acceso</a>
+        <a href="/contact">Contacto</a>
       </div>
-
       <div class="footer-col">
-        <h5>Servicios</h5>
-        <ul>
-          <li><a href='/catalogos'>Catálogos</a></li>
-          <li><a href='/journeys'>Todos los viajes</a></li>
-          
-        </ul>
+        <h5>Expediciones</h5>
+        <a href="/journeys">El calendario</a>
+        <a href="/catalogos">Dossiers</a>
+        <a href="/blog/">Cuaderno</a>
       </div>
-
       <div class="footer-col">
         <h5>Legal</h5>
-        <ul>
-          <li><a href='/terminos'>Términos y condiciones</a></li>
-          <li><a href='/privacidad'>Privacidad</a></li>
-          <li><a href='/cookies'>Cookies</a></li>
-        </ul>
+        <a href="/terminos">Términos y condiciones</a>
+        <a href="/privacidad">Privacidad</a>
+        <a href="/cookies">Cookies</a>
       </div>
     </div>
-    <div class="footer-bottom">
-      © 2026 Pasaporte Negro · Buenos Aires · Todos los derechos reservados.
+    <div class="container footer-legal">
+      <span>© 2026 Pasaporte Negro · Buenos Aires · Todos los derechos reservados.</span>
     </div>
   </footer>
 
