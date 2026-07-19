@@ -6,7 +6,7 @@ Copiá todo lo que está entre las dos líneas `=====` y pegalo como un mensaje 
 
 =====
 
-Hola Claude. Soy el cliente del proyecto **Blisniuk & Amanov** (sitio de turismo de lujo). Otro Claude (Claude Code en el sandbox web) curó 37 fotos específicas de Unsplash y armó este script de descarga, pero su sandbox bloquea `images.unsplash.com`. Vos sí tenés acceso. Te pido lo siguiente, en este orden:
+Hola Claude. Soy el cliente del proyecto **Pasaporte Negro** (sitio de turismo de lujo). Otro Claude (Claude Code en el sandbox web) curó 37 fotos específicas de Unsplash y armó este script de descarga, pero su sandbox bloquea `images.unsplash.com`. Vos sí tenés acceso. Te pido lo siguiente, en este orden:
 
 ### Paso 1 — Correr el script
 Guardá el script abajo como `download-photos.sh` y corrélo:
@@ -34,7 +34,7 @@ Los corruptos se mueven a `assets/img/_failed/` (no quiero archivos basura mezcl
 | hero-piamonte-tartufo.jpg | Viñedos de las Langhe en otoño, vista aérea, viñedos rojos | ✅ / ❌ | (sugerir keywords para reemplazo) |
 | ... | ... | | |
 
-**(c) Un zip** llamado `blisniukamanov-photos.zip` con las 37 fotos para que yo lo descargue y lo agregue al repo.
+**(c) Un zip** llamado `sitio-photos.zip` con las 37 fotos para que yo lo descargue y lo agregue al repo.
 
 ### Descripciones esperadas por slot
 
