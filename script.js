@@ -34,7 +34,7 @@
       wa.href = "https://onnqcdjkvpvpvtsorpup.supabase.co/functions/v1/go?to=wa&c=sitio&src=fab";
     }
   }
-  fetch("content/site-settings.json", { cache: "no-store" })
+  fetch("/content/site-settings.json", { cache: "no-store" })
     .then((r) => (r.ok ? r.json() : null))
     .then((s) => { if (s) applySiteSettings(s); })
     .catch(() => {});
@@ -161,9 +161,9 @@
           </label>
 
           <label class="check"><input type="checkbox" name="acepta_privacidad" value="si" required /> Acepto la <a href="privacidad.html" target="_blank">política de privacidad</a></label>
-          <label class="check"><input type="checkbox" name="acepta_news" value="si" /> Quiero recibir novedades y otra información de Blisniuk &amp; Amanov</label>
+          <label class="check"><input type="checkbox" name="acepta_news" value="si" /> Quiero recibir novedades y otra información de Pasaporte Negro</label>
 
-          <button type="submit" class="btn btn-laurel modal-submit">Hablar con un experto</button>
+          <button type="submit" class="btn btn-laurel modal-submit">Enviar consulta</button>
 
           <p class="modal-legal">Al enviar este formulario nos autorizás a que te contactemos con respecto a esta consulta. Tus datos no se comparten con terceros. Podés darte de baja en cualquier momento.</p>
         </form>
@@ -984,4 +984,18 @@
       .catch(function () { if (btn) btn.disabled = false; alert("No pudimos enviar la consulta. Proba de nuevo."); });
   }
   document.addEventListener("submit", handler, true);
+})();
+
+/* Prefill de destino en /contact?exp=<slug|nombre> */
+(function () {
+  var sel = document.querySelector('select[name="destino"]');
+  if (!sel) return;
+  var q = new URLSearchParams(window.location.search || "");
+  var exp = (q.get("exp") || "").trim();
+  if (!exp) return;
+  var MAP = {"piamonte-tartufo":"Piemonte","engadin-navidad":"Engadina","uzbekistan-ruta-seda":"Uzbekist\u00e1n","namibia-dunas":"Namibia","laponia-auroras":"Laponia","bahia-otro-carnaval":"Bah\u00eda","japon-mono-no-aware":"Jap\u00f3n","butan-nepal-himalaya":"But\u00e1n y Nepal","marruecos-imperial":"Marruecos","croacia-islas-dalmatas":"Dalmacia","alaska-salvaje":"Alaska"};
+  var nombre = MAP[exp] || exp;
+  for (var i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === nombre) { sel.selectedIndex = i; break; }
+  }
 })();
