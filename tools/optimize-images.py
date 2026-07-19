@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tools/optimize-images.py — Pipeline de imágenes de Blisniuk & Amanov.
+tools/optimize-images.py — Pipeline de imágenes de Pasaporte Negro.
 
 Toda foto que se suba a assets/img/ pasa por acá: se convierte a WebP
 optimizado y se generan versiones responsivas (480 / 960 / 1440 px de
