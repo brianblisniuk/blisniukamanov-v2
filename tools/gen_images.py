@@ -2,7 +2,7 @@
 import os, math, random
 from PIL import Image, ImageDraw, ImageFilter
 
-OUT = "/home/user/blisniukamanov/assets/img"
+OUT = "/home/user/sitio/assets/img"
 os.makedirs(OUT, exist_ok=True)
 
 # Each entry: (filename, [(top RGB), (mid RGB), (bottom RGB)], horizon_y_ratio, accent_band, style)
